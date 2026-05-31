@@ -34,7 +34,7 @@ test_skillenv_install() {
   fi
 
   local installed
-  installed="$(find .agents/skills -path '*/SKILL.md' -print | head -n 1)"
+  installed="$(find .agents/skills -path '*/SKILL.md' -print -quit)"
   if [[ -z "$installed" ]]; then
     printf 'skillenv did not install any SKILL.md into .agents/skills\n' >&2
     exit 1
@@ -62,7 +62,7 @@ test_rulesync_install() {
   fi
 
   local installed
-  installed="$(find .agents/skills -path '*/SKILL.md' -print | head -n 1)"
+  installed="$(find .agents/skills -path '*/SKILL.md' -print -quit)"
   if [[ -z "$installed" ]]; then
     printf 'rulesync did not generate any SKILL.md into .agents/skills\n' >&2
     exit 1
@@ -82,7 +82,7 @@ test_skills_cli_install() {
   skills add "$repo_root" --skill handoff --agent codex --yes
 
   local installed
-  installed="$(find . -path '*/handoff/SKILL.md' -print | head -n 1)"
+  installed="$(find . -path '*/handoff/SKILL.md' -print -quit)"
   if [[ -z "$installed" ]]; then
     printf 'skills CLI did not install handoff into the temp project\n' >&2
     exit 1
