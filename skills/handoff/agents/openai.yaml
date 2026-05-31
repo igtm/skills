@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cross-Agent Handoff"
+  short_description: "Carry work across agent limits"
+  default_prompt: "Use $handoff to write a compact transfer note another agent can resume from immediately."

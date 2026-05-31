@@ -1,0 +1,25 @@
+name: Install Smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up mise
+        uses: jdx/mise-action@v3
+        with:
+          version: 2026.5.16
+
+      - name: Run install smoke tests
+        run: mise run install-smoke

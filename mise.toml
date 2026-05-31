@@ -1,0 +1,13 @@
+[tools]
+node = "22"
+rust = "stable"
+"cargo:https://github.com/igtm/skillenv.git" = { version = "branch:main", crate = "skillenv", bin = "skillenv", locked = true }
+"npm:rulesync" = "latest"
+"npm:skills" = "latest"
+
+[settings]
+npm.package_manager = "npm"
+
+[tasks.install-smoke]
+description = "Run install smoke tests for skillenv, rulesync, and skills."
+run = "./scripts/ci/install-smoke.sh"
