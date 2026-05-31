@@ -41,7 +41,7 @@ test_skillenv_install() {
   fi
 
   assert_file "$installed"
-  grep -q '^name: handoff$' "$installed"
+  grep -q '^# Handoff$' "$installed"
 }
 
 test_rulesync_install() {
