@@ -1,6 +1,6 @@
 ---
 name: user-context
-description: Agent Skill: User Context (Profile & Access Manager). いかなるタスクや他のスキルを実行する前に必ず最初に起動し、実行ユーザーの統合プロファイルをロードして disabled_skills に基づくアクセス制御を適用する。OSカーネル（中核）として機能する。
+description: "Agent Skill: User Context (Profile & Access Manager). いかなるタスクや他のスキルを実行する前に必ず最初に起動し、実行ユーザーの統合プロファイルをロードして disabled_skills に基づくアクセス制御を適用する。OSカーネル（中核）として機能する。"
 ---
 
 # User Context (Profile & Access Manager)
