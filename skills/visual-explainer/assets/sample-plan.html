@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Execution Plan - APIサーバー構築フロー（サンプル）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { brand: '#00ffcc' } } }
+    }
+  </script>
+</head>
+<body class="min-h-screen p-8 font-sans bg-slate-900 text-slate-100">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 pb-4 border-b border-opacity-30 border-current">
+      <h1 class="text-3xl font-bold mb-2">APIサーバー構築フロー（サンプル）</h1>
+      <p class="text-sm opacity-70">
+        Project: sample-project | Generated at: 2026-06-19 14:30:00
+      </p>
+    </header>
+
+    <div class="mb-8 overflow-x-auto">
+      <canvas id="flow" role="img"
+        aria-label="APIサーバー構築フロー: 要件定義→API設計→（DB設計・認証設計）→実装→単体テスト→結合テスト→ステージングデプロイ→本番デプロイ"></canvas>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">1. 要件定義</h2>
+        <p class="text-sm opacity-90">機能要件と非機能要件を整理し、エンドポイントの候補を洗い出します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">2. API設計</h2>
+        <p class="text-sm opacity-90">RESTfulまたはGraphQLの方針を決定し、OpenAPI仕様を作成します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">3. DB設計</h2>
+        <p class="text-sm opacity-90">エンティティ関係を整理し、スキーマとマイグレーションを定義します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">4. 認証設計</h2>
+        <p class="text-sm opacity-90">JWTやOAuthなど、セッション管理の方式を選定・実装します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">5. 実装</h2>
+        <p class="text-sm opacity-90">ハンドラ、サービス、リポジトリ層を分割して実装します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">6. テスト</h2>
+        <p class="text-sm opacity-90">単体テストと結合テストを実行し、カバレッジを確認します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">7. ステージングデプロイ</h2>
+        <p class="text-sm opacity-90">検証環境にデプロイし、動作確認と負荷テストを実施します。</p>
+      </div>
+      <div class="p-4 border-2 border-brand rounded-none bg-slate-800">
+        <h2 class="text-brand font-bold mb-2">8. 本番デプロイ</h2>
+        <p class="text-sm opacity-90">本番環境へ反映し、監視とロールバック手順を準備します。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 図は canvas で手描き（外部の図ライブラリなし） -->
+  <script>
+    (function () {
+      const FONT = '"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif';
+      const C = { bg: '#0f172a', node: '#1e293b', text: '#f1f5f9', line: '#00ffcc',
+                  border: '#00ffcc', startEnd: '#0b3b36' };
+      const W = 600, H = 680;
+      const cv = document.getElementById('flow');
+      const ctx = cv.getContext('2d');
+      const DPR = window.devicePixelRatio || 1;
+      cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+      ctx.scale(DPR, DPR);
+
+      ctx.fillStyle = C.bg;        // canvas 背景を塗る（デフォルト透過のため）
+      ctx.fillRect(0, 0, W, H);
+
+      const N = {
+        A: { x: 300, y: 34,  w: 190, h: 42, t: '要件定義',          se: true },
+        B: { x: 300, y: 110, w: 190, h: 42, t: 'API設計' },
+        C: { x: 160, y: 192, w: 180, h: 42, t: 'DB設計' },
+        D: { x: 440, y: 192, w: 180, h: 42, t: '認証設計' },
+        E: { x: 300, y: 274, w: 190, h: 42, t: '実装' },
+        F: { x: 300, y: 350, w: 190, h: 42, t: '単体テスト' },
+        G: { x: 300, y: 426, w: 190, h: 42, t: '結合テスト' },
+        H: { x: 300, y: 502, w: 220, h: 42, t: 'ステージングデプロイ' },
+        I: { x: 300, y: 578, w: 190, h: 42, t: '本番デプロイ',        se: true }
+      };
+      const top = n => ({ x: n.x, y: n.y - n.h / 2 });
+      const bottom = n => ({ x: n.x, y: n.y + n.h / 2 });
+
+      function arrowhead(x, y, ang) {
+        const s = 8;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - s * Math.cos(ang - 0.42), y - s * Math.sin(ang - 0.42));
+        ctx.lineTo(x - s * Math.cos(ang + 0.42), y - s * Math.sin(ang + 0.42));
+        ctx.closePath(); ctx.fillStyle = C.line; ctx.fill();
+      }
+      function arrow(p1, p2) {
+        ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        arrowhead(p2.x, p2.y, Math.atan2(p2.y - p1.y, p2.x - p1.x));
+      }
+      function drawNode(n) {
+        const x = n.x - n.w / 2, y = n.y - n.h / 2;
+        ctx.fillStyle = n.se ? C.startEnd : C.node;
+        ctx.fillRect(x, y, n.w, n.h);            // シャープな角
+        ctx.lineWidth = n.se ? 2.5 : 1.5;
+        ctx.strokeStyle = C.border;
+        ctx.strokeRect(x, y, n.w, n.h);
+        ctx.fillStyle = n.se ? C.line : C.text;
+        ctx.font = 'bold 14px ' + FONT;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(n.t, n.x, n.y);
+      }
+
+      arrow(bottom(N.A), top(N.B));
+      arrow({ x: N.B.x - 40, y: bottom(N.B).y }, top(N.C));
+      arrow({ x: N.B.x + 40, y: bottom(N.B).y }, top(N.D));
+      arrow(bottom(N.C), { x: N.E.x - 40, y: top(N.E).y });
+      arrow(bottom(N.D), { x: N.E.x + 40, y: top(N.E).y });
+      arrow(bottom(N.E), top(N.F));
+      arrow(bottom(N.F), top(N.G));
+      arrow(bottom(N.G), top(N.H));
+      arrow(bottom(N.H), top(N.I));
+
+      Object.values(N).forEach(drawNode);
+    })();
+  </script>
+</body>
+</html>
