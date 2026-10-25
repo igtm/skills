@@ -26,7 +26,21 @@ test_skillenv_install() {
 
   git init -q
   skillenv init
-  skillenv add "$repo_root" --name local-skills
+  cat > skillenv.toml <<EOF
+[skillenv]
+version = 1
+
+[[source]]
+name = "local-skills"
+from = "path:$repo_root"
+skills = "*"
+
+[[deploy]]
+target = "agents:repo"
+include = ["*"]
+EOF
+  skillenv fetch
+  skillenv link
 
   if [[ ! -d .agents/skills ]]; then
     printf 'skillenv did not create .agents/skills\n' >&2
@@ -34,9 +48,9 @@ test_skillenv_install() {
   fi
 
   local installed
-  installed="$(find .agents/skills -path '*/SKILL.md' -print -quit)"
+  installed="$(find .agents/skills -path '*/skillenv-*-handoff/SKILL.md' -print -quit)"
   if [[ -z "$installed" ]]; then
-    printf 'skillenv did not install any SKILL.md into .agents/skills\n' >&2
+    printf 'skillenv did not install handoff into .agents/skills\n' >&2
     exit 1
   fi
 

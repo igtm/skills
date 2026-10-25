@@ -4,7 +4,7 @@
 
 個人用の agent skills リポジトリです。
 
-この repo は flat な `skills/<skill-name>/` レイアウトです。`npx skills` でそのまま扱いやすく、`skillenv` も managed source として flat `skills/<skill>` repo を受け付けるので、そのまま追加できます。
+この repo は flat な `skills/<skill-name>/` レイアウトです。`npx skills` でそのまま扱いやすく、`skillenv` も `skillenv.toml` の source として取り込めます。
 
 ## `mise` で installer 群を管理する
 
@@ -37,25 +37,41 @@ cd ~/tmp/skillenv
 cargo install --path . --locked
 ```
 
-そのうえで、skills を使いたいプロジェクト側でこの repo を追加します:
+skills を使いたいプロジェクト側で初期化します:
 
 ```bash
 cd /path/to/your/project
 skillenv init
-skillenv add igtm/skills --name igtm-skills
-skillenv link
 ```
 
-`skillenv` の repo-local source 自体は `skillenv/default` などの構成ですが、managed remote source はこの repo のような flat `skills/<skill>` 構成でも取り込めます。
+生成された `skillenv.toml` を編集して、この repo とプロジェクト内の `.agents/skills` への配置を宣言します:
 
-GitHub 経由ではなく、この repo のローカル checkout を直接使うこともできます:
+```toml
+[skills]
+"github:igtm/skills" = ["*"]
+
+[[deploy]]
+target = "agents:repo"
+include = ["*"]
+```
+
+宣言した skills を取得し、配置します:
 
 ```bash
-cd /path/to/your/project
-skillenv init
-skillenv add /path/to/skills --name igtm-skills-local
+skillenv fetch
 skillenv link
 ```
+
+`skillenv` 1.x は manifest と lock file を使います。旧 `add` / `update` コマンドと `skillenv/default` レイアウトは、`skillenv.toml`、`fetch`、`link` に置き換わっています。
+
+GitHub 経由ではなくローカル checkout を使う場合は、`[skills]` の GitHub エントリを次に置き換えます:
+
+```toml
+[skills]
+"path:/path/to/skills" = ["*"]
+```
+
+`[[deploy]]` の設定は残し、再度 `skillenv fetch` と `skillenv link` を実行します。
 
 `skillenv` のローカル checkout がない場合は GitHub からインストールします:
 
@@ -90,25 +106,28 @@ rulesync generate --targets "*" --features "*"
 
 ## `vercel-labs/agent-skills` も同じ方法で入れる
 
-同じ `skillenv` フローで追加できます:
+`skillenv.toml` の同じ `[skills]` テーブルにエントリを追加します:
+
+```toml
+[skills]
+"github:igtm/skills" = ["*"]
+"github:vercel-labs/agent-skills" = ["*"]
+```
+
+上記の `[[deploy]]` 設定を残し、`skillenv fetch` と `skillenv link` を実行します。
+
+必要な skill だけ入れる場合は、その source の `["*"]` を名前の配列に置き換えます:
+
+```toml
+"github:vercel-labs/agent-skills" = ["frontend-design", "skill-creator"]
+```
+
+upstream の変更を確認し、manifest 内の remote source を更新する場合:
 
 ```bash
-cd /path/to/your/project
-skillenv init
-skillenv add vercel-labs/agent-skills --name vercel
+skillenv outdated
+skillenv fetch --update
 skillenv link
-```
-
-必要な skill だけ入れる場合:
-
-```bash
-skillenv add vercel-labs/agent-skills --skill frontend-design --skill skill-creator --name vercel
-```
-
-あとから更新する場合:
-
-```bash
-skillenv update vercel
 ```
 
 ## `npx skills` でインストールする
