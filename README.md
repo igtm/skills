@@ -4,7 +4,7 @@
 
 Personal agent skills repository.
 
-This repo uses a flat `skills/<skill-name>/` layout. That makes it work naturally with `npx skills`, and `skillenv` can also consume it as a managed source because it accepts flat `skills/<skill>` repositories.
+This repo uses a flat `skills/<skill-name>/` layout. That makes it work naturally with `npx skills`, and `skillenv` can consume it through a `skillenv.toml` source.
 
 ## Manage the installers with `mise`
 
@@ -37,25 +37,41 @@ cd ~/tmp/skillenv
 cargo install --path . --locked
 ```
 
-Then add this repo to any project where you want the skills:
+Initialize the project where you want the skills:
 
 ```bash
 cd /path/to/your/project
 skillenv init
-skillenv add igtm/skills --name igtm-skills
-skillenv link
 ```
 
-`skillenv` repo-local sources use `skillenv/default` and related directories, but managed remote sources can be flat `skills/<skill>` repos like this one.
+Edit the generated `skillenv.toml` to declare this repository and deploy to the project's `.agents/skills`:
 
-If you want to use a local checkout of this repo instead of GitHub:
+```toml
+[skills]
+"github:igtm/skills" = ["*"]
+
+[[deploy]]
+target = "agents:repo"
+include = ["*"]
+```
+
+Fetch the declared skills, then deploy them:
 
 ```bash
-cd /path/to/your/project
-skillenv init
-skillenv add /path/to/skills --name igtm-skills-local
+skillenv fetch
 skillenv link
 ```
+
+`skillenv` 1.x uses a manifest and lock file. The old `add` / `update` commands and `skillenv/default` layout have been replaced by `skillenv.toml`, `fetch`, and `link`.
+
+To use a local checkout instead of GitHub, replace the GitHub entry in `[skills]` with:
+
+```toml
+[skills]
+"path:/path/to/skills" = ["*"]
+```
+
+Keep the `[[deploy]]` rule, then run `skillenv fetch` and `skillenv link` again.
 
 If you do not have the local checkout of `skillenv`, install it from GitHub instead:
 
@@ -90,25 +106,28 @@ If your goal is to consume this repository directly as a skills source, `skillen
 
 ## Also install `vercel-labs/agent-skills`
 
-With the same `skillenv` workflow:
+Add an entry to the same `[skills]` table in `skillenv.toml`:
+
+```toml
+[skills]
+"github:igtm/skills" = ["*"]
+"github:vercel-labs/agent-skills" = ["*"]
+```
+
+Keep the `[[deploy]]` rule above, then run `skillenv fetch` and `skillenv link`.
+
+To select specific skills, replace that source's `["*"]` with their names:
+
+```toml
+"github:vercel-labs/agent-skills" = ["frontend-design", "skill-creator"]
+```
+
+Check for upstream changes and update the manifest's remote sources:
 
 ```bash
-cd /path/to/your/project
-skillenv init
-skillenv add vercel-labs/agent-skills --name vercel
+skillenv outdated
+skillenv fetch --update
 skillenv link
-```
-
-Install only selected skills from that pack:
-
-```bash
-skillenv add vercel-labs/agent-skills --skill frontend-design --skill skill-creator --name vercel
-```
-
-Update the managed source later:
-
-```bash
-skillenv update vercel
 ```
 
 ## Install with `npx skills`
